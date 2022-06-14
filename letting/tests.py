@@ -21,7 +21,6 @@ class TestLettings(TestCase):
         page should contain <title>lettings title value</title>
         """
         Lettings_tests = Letting.objects.all()
-        print(Lettings_tests)
         for letting in Lettings_tests:
             response = self.client.get(reverse('lettings:letting', args=[letting.id]))
             assert response.status_code == 200
