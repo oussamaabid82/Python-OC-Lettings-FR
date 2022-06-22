@@ -2,24 +2,51 @@ version: 2.1
 
 orbs:
     python: circleci/python@1.5.0
+    docker: circleci/docker@1.5.0
 
 jobs:
     build-and-test: 
-      docker:
-          - image: cimg/python:3.10.2
+        
+        steps:
+            - checkout
+            - python/install-packages:
+                pkg-manager: pip
 
-      steps:
-        - checkout
-        - python/install-packages:
-              pkg-manager: pip
+            - run:
+                name: Run tests
+                command: pytest
 
-        - run:
-            name: Run tests
-            command: pytest
+            - run:
+                name: linting PEP8
+                command: flake8
+            
+             # un environnement distant sera créé et votre conteneur primaire sera configuré
+            - setup_remote_docker
+        
+    deploy-docker:
 
-        - run:
-            name: linting PEP8
-            command: flake8
+        docker:
+            - image: cimg/python:3.10.2
+              auth:
+                username: $DOCKERHUB_USERNAME
+                password: $DOCKERHUB_PASSWOR
+        
+        steps:
+            - checkout
+
+            - run: 
+                name: build image
+                command: docker build -t docker run -p 8000:8000 oussamaabid82/letting:latest .
+            
+            - run:
+                # Pousse l'image Docker vers Docker Hub.
+                # Replace oc_lettings_site:latest with the 
+                # <docker_hub_username/docker-hub-password:version> you used to build the image above
+                name: Push to Docker Hub
+                command: |
+                    docker login -u $DOCKERHUB_USERNAME -p $DOCKERHUB_PASSWORD
+                    docker tag oussamaabid82/letting:latest oussamaabid82/letting:$CIRCLE_SHA1
+                    docker push oussamaabid82/letting:$CIRCLE_SHA1
 
 workflows:
     sample: 
