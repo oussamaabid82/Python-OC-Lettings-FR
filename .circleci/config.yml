@@ -39,16 +39,28 @@ jobs:
                 command: docker build -t docker run -p 8000:8000 oussamaabid82/letting:latest .
             
             - run:
-                # Pousse l'image Docker vers Docker Hub.
-                # Replace oc_lettings_site:latest with the 
-                # <docker_hub_username/docker-hub-password:version> you used to build the image above
+                # Pousse l'image Docker vers Docker Hub. 
                 name: Push to Docker Hub
                 command: |
                     docker login -u $DOCKERHUB_USERNAME -p $DOCKERHUB_PASSWORD
                     docker tag oussamaabid82/letting:latest oussamaabid82/letting:$CIRCLE_SHA1
                     docker push oussamaabid82/letting:$CIRCLE_SHA1
 
+    deploy-heroku:
+        machine: true
+        steps:
+            - checkout
+            - run:
+                name: Build and push Docker image to Heroku
+                command: |
+                    sudo curl https://cli-assets.heroku.com/install.sh | sh
+                    HEROKU_API_KEY=${HEROKU_API_KEY} heroku container:login
+                    HEROKU_API_KEY=${HEROKU_API_KEY} heroku container:push web
+                    HEROKU_API_KEY=${HEROKU_API_KEY} heroku container:release web
+
+
 workflows:
     sample: 
         jobs:
             - build-and-test
+            - deploy-docker
