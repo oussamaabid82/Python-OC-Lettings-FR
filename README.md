@@ -75,3 +75,23 @@ Utilisation de PowerShell, comme ci-dessus sauf :
 
 - Pour activer l'environnement virtuel, `.\venv\Scripts\Activate.ps1` 
 - Remplacer `which <my-command>` par `(Get-Command <my-command>).Path`
+
+## Déploiement
+
+### Prérequis
+
+- [Avoir un compte sur Docker Hub](https://hub.docker.com/)
+- [Avoir Docker sur l'ordinateur](https://www.docker.com/get-started/)
+- [Avoir un compte circleCI](https://circleci.com/)
+- [Avoir un compte Heroku](https://signup.heroku.com/)
+- [Avoir Heroku sur l'ordinateur](https://devcenter.heroku.com/articles/heroku-cli)
+
+
+### Résumé du fonctionnement
+Dès qu'on pousse un commit sur GitHub, circleCI se charge de le tester et si tous les testes passe bien circleCI passe le commit à Docker Hub pour créer le conteneur ensuite Heroku le recupére pour le rendre accessible.
+
+### Étapes de configuration
+
+1. Docker
+
+

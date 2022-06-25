@@ -19,11 +19,8 @@ jobs:
             - run:
                 name: linting PEP8
                 command: flake8
-            
-             # un environnement distant sera créé et votre conteneur primaire sera configuré
-            - setup_remote_docker
-        
-    deploy-docker:
+
+    image-docker:
 
         docker:
             - image: cimg/python:3.10.2
@@ -33,6 +30,10 @@ jobs:
         
         steps:
             - checkout
+            
+            - setup_remote_docker:
+                version: 20.10.14
+                docker_layer_caching: true
 
             - run: 
                 name: build image
@@ -58,9 +59,9 @@ jobs:
                     HEROKU_API_KEY=${HEROKU_API_KEY} heroku container:push web
                     HEROKU_API_KEY=${HEROKU_API_KEY} heroku container:release web
 
-
 workflows:
     sample: 
         jobs:
             - build-and-test
-            - deploy-docker
+            - image-docker
+            - deploy-heroku
