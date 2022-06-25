@@ -38,7 +38,9 @@ jobs:
 
             - run: 
                 name: build image
-                command: docker build -t docker run -p 8000:8000 oussamaabid82/letting:latest .
+                command: |
+                    docker build -t oussamaabid82/letting:latest
+                    docker run -p 8000:8000 oussamaabid82/letting:latest .
             
             - run:
                 # Pousse l'image Docker vers Docker Hub. 
