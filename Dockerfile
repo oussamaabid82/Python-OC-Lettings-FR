@@ -9,7 +9,7 @@ WORKDIR /code
 
 COPY requirements.txt /code/
 
-RUN pip install --no-cache-dir -r requirements.txt
+RUN python -m pip install --user --upgrade pip && pip install --no-cache-dir -r requirements.txt
 
 COPY . /code/
 
