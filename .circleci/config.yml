@@ -24,10 +24,10 @@ jobs:
     image-docker:
 
         docker:
-            - image: cimg/python:3.10.2
+            - image: cimg/python:3.9.13
               auth:
-                username: $DOCKERHUB_USERNAME
-                password: $DOCKERHUB_PASSWOR
+                username: $DOCKER_LOGIN
+                password: $DOCKER_PASSWORD
         
         steps:
             - checkout
@@ -40,14 +40,14 @@ jobs:
                 name: build Docker image
                 command: |
                     docker build -t letting .
-                    docker run -p 8000:8000 oussamaabid82/letting:latest
+                    docker run -p 8000:8000 oussamaabid82/lettings:latest
             
             - run:
                 # Pousse l'image Docker vers Docker Hub. 
                 name: Push to Docker Hub
                 command: |
-                    docker login -u $DOCKERHUB_USERNAME -p $DOCKERHUB_PASSWORD
-                    docker tag oussamaabid82/letting:latest oussamaabid82/letting:$CIRCLE_SHA1
+                    docker login -u $DOCKER_LOGIN -p $DOCKER_PASSWORD
+                    docker tag oussamaabid82/lettings:latest oussamaabid82/letting:$CIRCLE_SHA1
                     docker push oussamaabid82/letting:$CIRCLE_SHA1
 
     deploy-heroku:

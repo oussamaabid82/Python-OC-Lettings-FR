@@ -94,4 +94,9 @@ Dès qu'on pousse un commit sur GitHub, circleCI se charge de le tester et si to
 
 1. Docker
 
+Après la création d'un compte docker hub, utilisez le bouton ```Create Repository``` pour créer un nouveau dépot pour les conteneurs.
 
+Les variables suivantes seront utiles pour la configuration de CircleCI :
+
+- DOCKER_LOGIN (Identifiant Docker-Hub)
+- DOCKER_PASSWORD (Mot de passe Docker-Hub)
