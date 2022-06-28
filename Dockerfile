@@ -5,6 +5,9 @@ FROM python:3
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
 
+ARG SECRET_KEY='pass'
+ENV SECRET_KEY=${SECRET_KEY}
+
 WORKDIR /code
 
 COPY requirements.txt /code/
@@ -15,5 +18,4 @@ COPY . /code/
 
 EXPOSE 8000
 
-ENTRYPOINT ["python", "manage.py", "migrate"] 
-CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
+CMD ["python", "manage.py", "migrate"] && ["python", "manage.py", "runserver", "0.0.0.0:8000"]
