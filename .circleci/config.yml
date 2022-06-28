@@ -23,59 +23,59 @@ jobs:
           paths:
             - .
 
-  docker_build_and_push:
-    docker:
-      - image: cimg/base:2022.06
-        auth:
-          username: $DOCKER_LOGIN
-          password: $DOCKER_PASSWORD
+    docker_build_and_push:
+        docker:
+        - image: cimg/base:2022.06
+            auth:
+            username: $DOCKER_LOGIN
+            password: $DOCKER_PASSWORD
 
-    steps:
-      - checkout
+        steps:
+        - checkout
 
-      - setup_remote_docker:
-          version: 20.10.14
-          docker_layer_caching: true
+        - setup_remote_docker:
+            version: 20.10.14
+            docker_layer_caching: true
 
-      # build and push Docker image
-      - run:
-          command: |
-            docker build -t $DOCKER_LOGIN/$IMAGE_NAME:$CIRCLE_SHA1 .
-            docker build  -t $DOCKER_LOGIN/$IMAGE_NAME:latest .
-            echo $DOCKER_PASSWORD | docker login -u $DOCKER_LOGIN --password-stdin
-            docker push $DOCKER_LOGIN/$IMAGE_NAME:$CIRCLE_SHA1
-            docker push $DOCKER_LOGIN/$IMAGE_NAME:latest
+        # build and push Docker image
+        - run:
+            command: |
+                docker build -t $DOCKER_LOGIN/$IMAGE_NAME:$CIRCLE_SHA1 .
+                docker build  -t $DOCKER_LOGIN/$IMAGE_NAME:latest .
+                echo $DOCKER_PASSWORD | docker login -u $DOCKER_LOGIN --password-stdin
+                docker push $DOCKER_LOGIN/$IMAGE_NAME:$CIRCLE_SHA1
+                docker push $DOCKER_LOGIN/$IMAGE_NAME:latest
 
-  deploy_to_heroku:
-    machine: true
-    steps:
-      - checkout
-      - run:
-          name: Build and push Docker image to Heroku
-          command: |
-            sudo curl https://cli-assets.heroku.com/install.sh | sh
-            HEROKU_API_KEY=${HEROKU_API_KEY} heroku container:login
-            HEROKU_API_KEY=${HEROKU_API_KEY} heroku config:set DEBUG=$DEBUG -a $HEROKU_APP_NAME
-            HEROKU_API_KEY=${HEROKU_API_KEY} heroku container:push -a $HEROKU_APP_NAME web
-            HEROKU_API_KEY=${HEROKU_API_KEY} heroku container:release -a $HEROKU_APP_NAME web
-workflows:
-  build_test:
-    jobs:
-      - test_and_lint
+    deploy_to_heroku:
+        machine: true
+        steps:
+        - checkout
+        - run:
+            name: Build and push Docker image to Heroku
+            command: |
+                sudo curl https://cli-assets.heroku.com/install.sh | sh
+                HEROKU_API_KEY=${HEROKU_API_KEY} heroku container:login
+                HEROKU_API_KEY=${HEROKU_API_KEY} heroku config:set DEBUG=$DEBUG -a $HEROKU_APP_NAME
+                HEROKU_API_KEY=${HEROKU_API_KEY} heroku container:push -a $HEROKU_APP_NAME web
+                HEROKU_API_KEY=${HEROKU_API_KEY} heroku container:release -a $HEROKU_APP_NAME web
+    workflows:
+    build_test:
+        jobs:
+        - test_and_lint
 
-      - docker_build_and_push:
-          requires:
-            - test_and_lint
+        - docker_build_and_push:
+            requires:
+                - test_and_lint
 
-          filters:
-            branches:
-              only:
-                - main
+            filters:
+                branches:
+                only:
+                    - main
 
-      - deploy_to_heroku:
-          requires:
-            - docker_build_and_push
-          filters:
-            branches:
-              only:
-                - main
+        - deploy_to_heroku:
+            requires:
+                - docker_build_and_push
+            filters:
+                branches:
+                only:
+                    - main
