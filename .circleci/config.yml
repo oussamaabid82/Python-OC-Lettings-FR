@@ -47,7 +47,7 @@ jobs:
                 # Pousse l'image Docker vers Docker Hub. 
                 name: Push to Docker Hub
                 command: |
-                    docker login -u $DOCKER_LOGIN -p $DOCKER_PASSWORD
+                    docker login --username=oussamaabid82
                     docker tag oussamaabid82/lettings:latest oussamaabid82/letting:$CIRCLE_SHA1
                     docker push oussamaabid82/letting:$CIRCLE_SHA1
 
