@@ -49,7 +49,7 @@ jobs:
                 command: |
                     docker login -u $DOCKER_LOGIN -p $DOCKER_PASSWORD
                     docker tag oussamaabid82/lettings:latest oussamaabid82/letting:$CIRCLE_SHA1
-                    docker push oussamaabid82/letting:$CIRCLE_SHA1
+                    docker push oussamaabid82/lettings:$CIRCLE_SHA1
 
     deploy-heroku:
         machine: true
