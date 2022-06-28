@@ -40,8 +40,9 @@ jobs:
             - run: 
                 name: build Docker image
                 command: |
-                    docker build -t letting .
-                    docker run -p 8000:8000 oussamaabid82/lettings:latest
+                    docker build -t $DOCKER_LOGIN/$IMAGE_NAME:latest .
+                    echo $DOCKER_PASSWORD | docker login -u $DOCKER_LOGIN --password-stdin
+                    docker push $DOCKER_LOGIN/$IMAGE_NAME:latest
             
             - run:
                 # Pousse l'image Docker vers Docker Hub. 
