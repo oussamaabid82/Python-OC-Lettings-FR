@@ -42,7 +42,7 @@ jobs:
                 command: |
                     docker build -t $DOCKER_LOGIN/$IMAGE_NAME:latest .
                     echo $DOCKER_PASSWORD | docker login -u $DOCKER_LOGIN --password-stdin
-                    docker push $DOCKER_LOGIN/$IMAGE_NAME:latest
+                    docker push $DOCKER_LOGIN/$IMAGE_NAME:latest .
             
             - run:
                 # Pousse l'image Docker vers Docker Hub. 
