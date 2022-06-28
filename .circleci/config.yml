@@ -1,71 +1,81 @@
 version: 2.1
 
 orbs:
-    python: circleci/python@1.5.0
-    docker: circleci/docker@1.5.0
-    heroku: circleci/heroku@1.2.6
+  python: circleci/python@2.0.3
+  docker: circleci/docker@2.1.2
+  heroku: circleci/heroku@1.2.6
 
 jobs:
+  test_and_lint:
+    executor: python/default # use the default executor defined within the orb
+    steps:
+      - checkout # checkout source code
+      - python/install-packages:
+          pkg-manager: pip
+      - run:
+          name: Run tests
+          command: python -m pytest
+      - run:
+          name: Run flake8
+          command: flake8
+      - persist_to_workspace:
+          root: ~/project
+          paths:
+            - .
 
-    build-and-test:
-        executor: python/default
-        steps:
-            - checkout
-            - python/install-packages:
-                pkg-manager: pip
+  docker_build_and_push:
+    docker:
+      - image: cimg/base:2022.06
+        auth:
+          username: $DOCKER_LOGIN
+          password: $DOCKER_PASSWORD
 
-            - run:
-                name: Run tests
-                command: pytest
+    steps:
+      - checkout
 
-            - run:
-                name: linting PEP8
-                command: flake8
+      - setup_remote_docker:
+          version: 20.10.14
+          docker_layer_caching: true
 
-    image-docker:
+      # build and push Docker image
+      - run:
+          command: |
+            docker build -t $DOCKER_LOGIN/$IMAGE_NAME:$CIRCLE_SHA1 .
+            docker build  -t $DOCKER_LOGIN/$IMAGE_NAME:latest .
+            echo $DOCKER_PASSWORD | docker login -u $DOCKER_LOGIN --password-stdin
+            docker push $DOCKER_LOGIN/$IMAGE_NAME:$CIRCLE_SHA1
+            docker push $DOCKER_LOGIN/$IMAGE_NAME:latest
 
-        docker:
-            - image: cimg/python:3.9.13
-              auth:
-                username: $DOCKER_LOGIN
-                password: $DOCKER_PASSWORD
-        
-        steps:
-            - checkout
-            
-            - setup_remote_docker:
-                version: 20.10.14
-                docker_layer_caching: true
-
-            - run: 
-                name: build Docker image
-                command: |
-                    docker build -t oussamaabid82/lettings:latest .
-                    docker push oussamaabid82/lettings:latest
-            
-            - run:
-                # Pousse l'image Docker vers Docker Hub. 
-                name: Push to Docker Hub
-                command: |
-                    docker login -u $DOCKER_LOGIN -p $DOCKER_PASSWORD
-                    docker tag oussamaabid82/lettings:latest oussamaabid82/letting:$CIRCLE_SHA1
-                    docker push oussamaabid82/letting:$CIRCLE_SHA1
-
-    deploy-heroku:
-        machine: true
-        steps:
-            - checkout
-            - run:
-                name: Build and push Docker image to Heroku
-                command: |
-                    sudo curl https://cli-assets.heroku.com/install.sh | sh
-                    HEROKU_API_KEY=${HEROKU_API_KEY} heroku container:login
-                    HEROKU_API_KEY=${HEROKU_API_KEY} heroku container:push web
-                    HEROKU_API_KEY=${HEROKU_API_KEY} heroku container:release web
-
+  deploy_to_heroku:
+    machine: true
+    steps:
+      - checkout
+      - run:
+          name: Build and push Docker image to Heroku
+          command: |
+            sudo curl https://cli-assets.heroku.com/install.sh | sh
+            HEROKU_API_KEY=${HEROKU_API_KEY} heroku container:login
+            HEROKU_API_KEY=${HEROKU_API_KEY} heroku config:set DEBUG=$DEBUG -a $HEROKU_APP_NAME
+            HEROKU_API_KEY=${HEROKU_API_KEY} heroku container:push -a $HEROKU_APP_NAME web
+            HEROKU_API_KEY=${HEROKU_API_KEY} heroku container:release -a $HEROKU_APP_NAME web
 workflows:
-    sample: 
-        jobs:
-            - build-and-test
-            - image-docker
-            - deploy-heroku
+  build_test:
+    jobs:
+      - test_and_lint
+
+      - docker_build_and_push:
+          requires:
+            - test_and_lint
+
+          filters:
+            branches:
+              only:
+                - main
+
+      - deploy_to_heroku:
+          requires:
+            - docker_build_and_push
+          filters:
+            branches:
+              only:
+                - main
