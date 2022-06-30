@@ -40,8 +40,8 @@ jobs:
             - run: 
                 name: build Docker image
                 command: |
-                    docker build -t oussamaabid82/lettings:latest .
-                    docker push oussamaabid82/lettings:latest .
+                    docker build -t lettings:latest .
+                    docker push letting:latest
             
             - run:
                 # Pousse l'image Docker vers Docker Hub. 
