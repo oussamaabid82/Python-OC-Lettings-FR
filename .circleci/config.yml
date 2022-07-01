@@ -28,7 +28,7 @@ jobs:
             - image: cimg/python:3.9.13
               auth:
                 username: $DOCKER_LOGIN
-                password: $DOCKER_PASSEWORD
+                password: $DOCKER_PASSWORD
         
         steps:
             - checkout
@@ -40,8 +40,7 @@ jobs:
             - run: 
                 name: build Docker image
                 command: |
-                    echo "$DOCKER_PASSWORD"
-                    docker login -u "$DOCKER_LOGIN" -p "$DOCKER_PASSEWORD"
+                    docker login -u "$DOCKER_LOGIN" -p "$DOCKER_PASSWORD"
                     docker build -t oussamaabid82/lettings:latest .
                     docker push oussamaabid82/lettings:latest
             
@@ -49,7 +48,7 @@ jobs:
                 # Pousse l'image Docker vers Docker Hub. 
                 name: Push to Docker Hub
                 command: |
-                    docker login -u "$DOCKER_LOGIN" -p "$DOCKER_PASSEWORD"
+                    docker login -u "$DOCKER_LOGIN" -p "$DOCKER_PASSWORD"
                     docker tag oussamaabid82/lettings:latest oussamaabid82/letting:$CIRCLE_SHA1
                     docker push oussamaabid82/letting:$CIRCLE_SHA1
 
@@ -61,7 +60,7 @@ jobs:
                 name: Build and push Docker image to Heroku
                 command: |
                     sudo curl https://cli-assets.heroku.com/install.sh | sh
-                    HEROKU_API_KEY=${HEROKU_API_KEY} heroku container:login
+                    HEROKU_API_KEY=${HEROKU_API_KEY} heroku container:login --interactive
                     HEROKU_API_KEY=${HEROKU_API_KEY} heroku container:push web
                     HEROKU_API_KEY=${HEROKU_API_KEY} heroku container:release web
 
