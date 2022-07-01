@@ -40,6 +40,7 @@ jobs:
             - run: 
                 name: build Docker image
                 command: |
+                    docker login -u $DOCKER_LOGIN -p $DOCKER_PASSWORD
                     docker build -t oussamaabid82/lettings:latest .
                     docker push oussamaabid82/lettings:latest
             
