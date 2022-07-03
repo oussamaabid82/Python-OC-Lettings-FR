@@ -68,5 +68,19 @@ workflows:
     sample: 
         jobs:
             - build-and-test
-            - image-docker
-            - deploy-heroku
+
+            - image-docker:
+                requires:
+                    - build-and-test
+                filters:
+                    branches:
+                        only:
+                            - main
+
+            - deploy-heroku:
+                requires:
+                    - image-docker
+                filters:
+                    branches:
+                        only:
+                            - main
