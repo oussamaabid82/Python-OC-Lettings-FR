@@ -14,10 +14,7 @@ jobs:
             
             - run:
                 name: update pip
-                command: |
-                    python -m pip install --upgrade pip
-                    pip install –-upgrade wheel
-                    pip install –-upgrade setuptools
+                command: python -m pip install --upgrade pip
 
             - python/install-packages:
                 pkg-manager: pip
