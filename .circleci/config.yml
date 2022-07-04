@@ -11,7 +11,11 @@ jobs:
         executor: python/default
         steps:
             - checkout
-            - python -m pip install --upgrade pip
+            
+            - run:
+                name: update pip
+                command: python -m pip install --upgrade pip
+                
             - python/install-packages:
                 pkg-manager: pip
 
