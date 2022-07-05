@@ -100,3 +100,8 @@ Les variables suivantes seront utiles pour la configuration de CircleCI :
 
 - DOCKER_LOGIN (Identifiant Docker-Hub)
 - DOCKER_PASSWORD (Mot de passe Docker-Hub)
+
+2. Heroku
+
+Après la création d'un compte Heroku, utilisez le menu Create new app pour créer une nouvelle application
+Toutes les autres informations utiles à Heroku lui seront envoyées en même temps que le container par CircleCI.
