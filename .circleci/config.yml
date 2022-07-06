@@ -46,16 +46,16 @@ jobs:
                 name: build Docker image
                 command: |
                     docker login -u "$DOCKER_LOGIN" -p "$DOCKER_PASSWORD"
-                    docker build -t oussamaabid82/lettings:latest .
-                    docker push oussamaabid82/lettings:latest
+                    docker build -t $DOCKER_LOGIN/$IMAGE_NAME:latest .
+                    docker push $DOCKER_LOGIN/$IMAGE_NAME:latest
             
             - run:
                 # Pousse l'image Docker vers Docker Hub. 
                 name: Push to Docker Hub
                 command: |
                     docker login -u "$DOCKER_LOGIN" -p "$DOCKER_PASSWORD"
-                    docker tag oussamaabid82/lettings:latest oussamaabid82/letting:$CIRCLE_SHA1
-                    docker push oussamaabid82/letting:$CIRCLE_SHA1
+                    docker tag $DOCKER_LOGIN/$IMAGE_NAME:latest $DOCKER_LOGIN/$IMAGE_NAME:$CIRCLE_SHA1
+                    docker push $DOCKER_LOGIN/$IMAGE_NAME:$CIRCLE_SHA1
 
     deploy-heroku:
         machine: true
