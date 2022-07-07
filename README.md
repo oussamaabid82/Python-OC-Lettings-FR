@@ -93,7 +93,7 @@ Dès qu'on pousse un commit sur GitHub, circleCI se charge de le tester et si to
 
 ### Étapes de configuration
 
-1. Docker hub
+#### 1. Docker hub
 
 Après la création d'un compte docker hub, utilisez le bouton ```Create Repository``` pour créer un nouveau dépot pour les conteneurs.
 
@@ -107,13 +107,13 @@ Récupérer le dernier commit de hachage en tapant dans le terminal:
 ```git rev-parse HEAD```
 > ```docker run -p 127.0.0.1:8000:8000 DOCKER_LOGIN/IMAGE_NAME:le dernier commit de hachage```
 
-2. Heroku
+#### 2. Heroku
 
 Après la création d'un compte [Heroku](https://signup.heroku.com/), utilisez le menu ```New / Create new app``` pour créer une nouvelle application (essayez de nommer l'application "oc-lettings" ou quelque chose similaire)
 
 Dans le nouveau app utilisez le bouton ```Deploy``` puis dans le menu ```Deployement method``` utilisez ```Container Registry``` et suivez la documentation
 
-3. CircleCI
+#### 3. CircleCI
 
 Après la création d'un compte, utilisez le menu ``Projets`` puis connectez le repo-github avec lequel vous travaillez à l'aide du bouton ``Set Up Project``.
 Utilisez le bouton ```...``` puis ``Project Settings``, puis ``Environment Variables`` à gauche.
@@ -140,7 +140,7 @@ Placez les variables suivantes :
 - DJANGO_SECRET_KEY
 > Clé Django
 
-4. Sentry
+#### 4. Sentry
 
 Après la création d'un compte, utilisez le bouton ``Create Project``
 - Choose a platform: choisissez Django
