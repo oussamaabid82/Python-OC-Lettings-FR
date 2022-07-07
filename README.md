@@ -85,14 +85,15 @@ Utilisation de PowerShell, comme ci-dessus sauf :
 - [Avoir un compte circleCI](https://circleci.com/)
 - [Avoir un compte Heroku](https://signup.heroku.com/)
 - [Avoir Heroku sur l'ordinateur](https://devcenter.heroku.com/articles/heroku-cli)
+- [Avoir un compte SENTRY](https://sentry.io/auth/login/)
 
 
 ### Résumé du fonctionnement
-Dès qu'on pousse un commit sur GitHub, circleCI se charge de le tester et si tous les testes passe bien circleCI passe le commit à Docker Hub pour créer le conteneur ensuite Heroku le recupére pour le rendre accessible.
+Dès qu'on pousse un commit sur GitHub, circleCI se charge de le tester et si tous les tests passe bien circleCI passe le commit à Docker Hub pour créer le conteneur ensuite Heroku le récupère pour le rendre accessible.
 
 ### Étapes de configuration
 
-1. Docker
+1. Docker hub
 
 Après la création d'un compte docker hub, utilisez le bouton ```Create Repository``` pour créer un nouveau dépot pour les conteneurs.
 
@@ -101,7 +102,47 @@ Les variables suivantes seront utiles pour la configuration de CircleCI :
 - DOCKER_LOGIN (Identifiant Docker-Hub)
 - DOCKER_PASSWORD (Mot de passe Docker-Hub)
 
+Pour créer un container et lancer une image en local:
+Récupérer le dernier commit de hachage en tapant dans le terminal:
+```git rev-parse HEAD```
+> ```docker run -p 127.0.0.1:8000:8000 DOCKER_LOGIN/IMAGE_NAME:le dernier commit de hachage```
+
 2. Heroku
 
-Après la création d'un compte Heroku, utilisez le menu Create new app pour créer une nouvelle application
-Toutes les autres informations utiles à Heroku lui seront envoyées en même temps que le container par CircleCI.
+Après la création d'un compte [Heroku](https://signup.heroku.com/), utilisez le menu ```New / Create new app``` pour créer une nouvelle application (essayez de nommer l'application "oc-lettings" ou quelque chose similaire)
+
+Dans le nouveau app utilisez le bouton ```Deploy``` puis dans le menu ```Deployement method``` utilisez ```Container Registry``` et suivez la documentation
+
+3. CircleCI
+
+Après la création d'un compte, utilisez le menu ``Projets`` puis connectez le repo-github avec lequel vous travaillez à l'aide du bouton ``Set Up Project``.
+Utilisez le bouton ```...``` puis ``Project Settings``, puis ``Environment Variables`` à gauche.
+Placez les variables suivantes :
+
+- HEROKU_APP_NAME
+> Le nom de l'application Heroku
+
+- HEROKU_API_KEY
+> Utilisez heroku authorizations:create de Heroku-CLI (Token)
+
+- DOCKER_LOGIN
+> Votre identifiant Docker-Hub
+
+- DOCKER_PASSWORD
+> Votre mot de passe Docker-Hub
+
+- IMAGE_NAME
+> Le nom de l'image Docker
+
+- SENTRY_DSN
+> Vous pouvez la trouver sur le site Sentry dans Settings / Projects / {VOTRE_PROJECT} / Client Keys (DSN) / DSN
+
+- DJANGO_SECRET_KEY
+> Clé Django
+
+4. Sentry
+
+Après la création d'un compte, utilisez le bouton ``Create Project``
+- Choose a platform: choisissez Django
+- Give your project a name: choisissez un nom
+- utilisez le bouton ```Create Project``` 
