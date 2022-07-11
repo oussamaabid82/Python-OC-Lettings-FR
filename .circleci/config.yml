@@ -7,28 +7,33 @@ orbs:
 
 jobs:
 
+    # Parti CI integrartion continue
     build-and-test:
         executor: python/default
         steps:
             - checkout
-            
+            # MAJ de pip
             - run:
                 name: update pip
                 command: python -m pip install --upgrade pip
-
+            
+            # installation des dépendance
             - python/install-packages:
                 pkg-manager: pip
 
+            # Execution des test
             - run:
                 name: Run tests
                 command: pytest
 
+            #Vérification de la qualité du code
             - run:
                 name: linting PEP8
                 command: flake8
 
     image-docker:
 
+        # Authentification à Docker
         docker:
             - image: cimg/python:3.9.13
               auth:
@@ -42,6 +47,7 @@ jobs:
                 version: 20.10.14
                 docker_layer_caching: true
 
+            # Création de l'image Docker
             - run: 
                 name: build Docker image
                 command: |
@@ -49,18 +55,20 @@ jobs:
                     docker build -t $DOCKER_LOGIN/$IMAGE_NAME:latest .
                     docker push $DOCKER_LOGIN/$IMAGE_NAME:latest
             
-            - run:
-                # Pousse l'image Docker vers Docker Hub. 
+            # Pousse l'image Docker vers Docker Hub.
+            - run: 
                 name: Push to Docker Hub
                 command: |
                     docker login -u "$DOCKER_LOGIN" -p "$DOCKER_PASSWORD"
                     docker tag $DOCKER_LOGIN/$IMAGE_NAME:latest $DOCKER_LOGIN/$IMAGE_NAME:$CIRCLE_SHA1
                     docker push $DOCKER_LOGIN/$IMAGE_NAME:$CIRCLE_SHA1
-
+    
+    # Parti CI integrartion continue
     deploy-heroku:
         machine: true
         steps:
             - checkout
+            # Pousser l'image Docker sur Heroku
             - run:
                 name: Build and push Docker image to Heroku
                 command: |
